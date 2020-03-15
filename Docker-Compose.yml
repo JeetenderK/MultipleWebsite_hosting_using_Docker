@@ -1,0 +1,77 @@
+version: '3.3'
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    networks:
+      - dockerwp
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ~/certs:/etc/nginx/certs
+      - AAA:/etc/nginx/vhost.d
+      - BBB:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    restart: always
+    labels:
+      - com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy 
+
+  letsencrypt-nginx-proxy-companion:
+    depends_on:
+      - nginx-proxy
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    networks:
+      - dockerwp
+    volumes:
+      - ~/certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - AAA:/etc/nginx/vhost.d
+      - BBB:/usr/share/nginx/html
+    restart: always
+    
+  mariadb1:
+    depends_on:
+      - letsencrypt-nginx-proxy-companion
+    image: mariadb
+    networks:
+      - dockerwp
+    volumes:
+      - mariadb1:/var/lib/mysql
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - AAA:/etc/nginx/vhost.d
+      - BBB:/usr/share/nginx/html
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD:supersecret 
+      - MYSQL_DATABASE:db1 
+      - MYSQL_USER:db1user 
+      - MYSQL_PASSWORD:secret
+      
+  mariadb2:
+    depends_on:
+      - letsencrypt-nginx-proxy-companion
+    image: mariadb
+    networks:
+      - dockerwp
+    volumes:
+      - mariadb2:/var/lib/mysql
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - AAA:/etc/nginx/vhost.d
+      - BBB:/usr/share/nginx/html
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD:supersecret 
+      - MYSQL_DATABASE:db2
+      - MYSQL_USER:db2user 
+      - MYSQL_PASSWORD:secret
+    
+volumes:
+  AAA:
+  BBB:
+  mariadb1:
+  mariadb2:
+  
+networks:
+  dockerwp:
+    driver: bridge

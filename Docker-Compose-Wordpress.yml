@@ -1,0 +1,44 @@
+version: '3.3'
+
+services:
+  wordpress1:
+    image: wordpress
+    networks:
+     - dockerwp
+    volumes:
+     - wordpress1:/var/www/html 
+     - ~/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    restart: always
+    environment:
+     - WORDPRESS_DB_HOST:mariadb1:3306 
+     - WORDPRESS_DB_NAME:db1 
+     - WORDPRESS_DB_USER:db1user 
+     - WORDPRESS_DB_PASSWORD:secret 
+     - VIRTUAL_HOST:sub.domain1.com 
+     - LETSENCRYPT_HOST:sub.domain1.com 
+     - LETSENCRYPT_EMAIL:admin@domain1.com
+
+  wordpress2:
+    image: wordpress
+    networks:
+     - dockerwp
+    volumes:
+     - wordpress2:/var/www/html 
+     - ~/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    restart: always
+    environment:
+     - WORDPRESS_DB_HOST:mariadb1:3306 
+     - WORDPRESS_DB_NAME:db2
+     - WORDPRESS_DB_USER:db2user 
+     - WORDPRESS_DB_PASSWORD:secret 
+     - VIRTUAL_HOST:sub.domain2.com 
+     - LETSENCRYPT_HOST:sub.domain2.com 
+     - LETSENCRYPT_EMAIL:admin@domain2.com
+  
+volumes:
+  wordpress1:
+  wordpress2:
+  
+networks:
+  dockerwp:
+    driver: bridge
