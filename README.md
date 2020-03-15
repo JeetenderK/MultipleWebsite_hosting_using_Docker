@@ -12,10 +12,7 @@ Contents :
 
 For conatiners made use of images :
 
-wordpress,
-jwilder/nginx-proxy,
-jrcs/letsencrypt-nginx-proxy-companion,
-mariadb
+wordpress, jwilder/nginx-proxy, jrcs/letsencrypt-nginx-proxy-companion, mariadb
 
 Total containers :
 2x wordpress
